@@ -58,6 +58,7 @@ describe('Elasticsearch Connection Integration Test', () => {
 
         expect(response.result).toBe('created');
 
+        // garantir que o índice esteja sincronizado antes de realizar a busca
         await client.indices.refresh({ index: indexName });
     });
 
