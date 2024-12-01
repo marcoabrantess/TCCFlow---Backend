@@ -24,7 +24,7 @@ if (!password) {
     );
 }
 
-const client = new Client({
+export const client = new Client({
     node,
     auth: {
         username,
@@ -32,7 +32,7 @@ const client = new Client({
     },
 });
 
-const checkConnection = async (): Promise<void> => {
+export const checkElasticSearchConnection = async (): Promise<void> => {
     try {
         const health = await client.cluster.health({});
         console.log('Elasticsearch cluster health:', health);
@@ -40,5 +40,3 @@ const checkConnection = async (): Promise<void> => {
         console.error('Elasticsearch connection failed:', err);
     }
 };
-
-export { client, checkConnection };

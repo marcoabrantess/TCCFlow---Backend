@@ -1,13 +1,16 @@
 import mongoose from 'mongoose';
-import { connectDB } from '../../../../src/infrastructure/database/mongoose';
+import {
+    connectMongoDB,
+    disconnectMongoDB,
+} from '../../../../src/infrastructure/database/config/mongoConnection';
 
 describe('Mongo Connection Integration Test', () => {
     beforeAll(async () => {
-        await connectDB();
+        await connectMongoDB();
     });
 
     afterAll(async () => {
-        await mongoose.connection.close();
+        await disconnectMongoDB();
     });
 
     it('Should establish a connection to the database', async () => {
