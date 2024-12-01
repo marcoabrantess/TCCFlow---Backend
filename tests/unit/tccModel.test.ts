@@ -1,4 +1,4 @@
-import TCC from '../../domain/models/TCC';
+import TCC from '../../src/domain/models/TCC';
 
 // describe(): Usamos essa função para agrupar nossos testes, criando uma "suite de testes" que pode ser usada para descrever um conjunto de testes relacionados.
 describe('Tcc Model Unit Test', () => {
