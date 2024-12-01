@@ -3,7 +3,34 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const client = new Client({ node: process.env.ELASTICSEARCH_NODE as string });
+const node = process.env.ELASTICSEARCH_NODE;
+if (!node) {
+    throw new Error(
+        'Missing elasticsearch node from required environment variables'
+    );
+}
+
+const username = process.env.ELASTICSEARCH_USER;
+if (!username) {
+    throw new Error(
+        'Missing elasticsearch username from required environment variables'
+    );
+}
+
+const password = process.env.ELASTICSEARCH_PASSWORD;
+if (!password) {
+    throw new Error(
+        'Missing elasticsearch password from required environment variables'
+    );
+}
+
+const client = new Client({
+    node,
+    auth: {
+        username,
+        password,
+    },
+});
 
 const checkConnection = async (): Promise<void> => {
     try {
