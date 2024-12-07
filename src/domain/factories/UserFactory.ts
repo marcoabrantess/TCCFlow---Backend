@@ -1,8 +1,8 @@
 import { User } from '../entities/User';
 import bcrypt from 'bcrypt';
-import { IFactory } from './IFactory';
+import { IUserFactory } from './IFactory';
 
-export class UserFactory implements IFactory {
+export class UserFactory implements IUserFactory {
     public async createUser(data: {
         name: string;
         email: string;
