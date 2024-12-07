@@ -1,10 +1,10 @@
 import { IUserRepository } from './IUserRepository';
 import { User } from '../entities/User';
-import { IFactory } from '../factories/IFactory';
+import { IUserFactory } from '../factories/IFactory';
 import { UserModel } from '../../infrastructure/database/models/UserModel';
 
 export class UserRepository implements IUserRepository {
-    constructor(private userFactory: IFactory) {}
+    constructor(private userFactory: IUserFactory) {}
 
     async create(userData: {
         name: string;

@@ -1,8 +1,8 @@
-import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { UserService } from '../../domain/services/UserService';
 import { User } from '../../domain/entities/User';
 
 export class CreateUser {
-    constructor(private userRepository: IUserRepository) {}
+    constructor(private readonly userService: UserService) {}
 
     async execute(data: {
         name: string;
@@ -10,6 +10,6 @@ export class CreateUser {
         password: string;
         userGroups?: string[];
     }): Promise<User> {
-        return this.userRepository.create(data);
+        return this.userService.create(data);
     }
 }
