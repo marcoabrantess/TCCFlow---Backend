@@ -1,0 +1,51 @@
+import mongoose, { Schema, Document } from 'mongoose';
+import { TCC } from '../../../domain/entities/TCC';
+
+export interface TCCDocument extends Document {
+    title: string;
+    authorId: string; // Referência ao ID do autor (usuário)
+    contentPath: string; // Caminho para o arquivo PDF
+    createdAt: Date;
+    updatedAt: Date;
+    toEntity(): TCC;
+}
+
+const tccSchema = new Schema<TCCDocument>(
+    {
+        title: { type: String, required: true, trim: true },
+        authorId: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (id: string) => mongoose.isValidObjectId(id),
+                message: 'authorId deve ser um ID válido',
+            },
+        },
+        contentPath: {
+            type: String,
+            required: true,
+            validate: {
+                validator: (path: string) => path.endsWith('.pdf'),
+                message: 'contentPath deve ser um arquivo PDF',
+            },
+        },
+        createdAt: { type: Date, default: Date.now },
+        updatedAt: { type: Date, default: Date.now },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+tccSchema.methods.toEntity = function (): TCC {
+    return new TCC(
+        this._id.toString(),
+        this.title,
+        this.authorId,
+        this.contentPath,
+        this.createdAt,
+        this.updatedAt
+    );
+};
+
+export const TCCModel = mongoose.model<TCCDocument>('TCC', tccSchema);
