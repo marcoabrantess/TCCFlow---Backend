@@ -3,8 +3,8 @@ import { TCC } from '../../../domain/entities/TCC';
 
 export interface TCCDocument extends Document {
     title: string;
-    authorId: string; // Referência ao ID do autor (usuário)
-    contentPath: string; // Caminho para o arquivo PDF
+    authorId: string;
+    contentPath: string;
     createdAt: Date;
     updatedAt: Date;
     toEntity(): TCC;
