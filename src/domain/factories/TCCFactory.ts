@@ -13,12 +13,12 @@ export class TCCFactory implements ITCCFactory {
         }
 
         return new TCC(
-            crypto.randomUUID(), // ID único
+            crypto.randomUUID(),
             data.title,
             data.authorId,
             data.contentPath,
-            new Date(), // createdAt
-            new Date() // updatedAt
+            new Date(),
+            new Date()
         );
     }
 }

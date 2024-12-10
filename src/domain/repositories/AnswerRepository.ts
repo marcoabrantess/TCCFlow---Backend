@@ -23,19 +23,16 @@ export class AnswerRepository implements IAnswerRepository {
         return answer;
     }
 
-    async findAnswerById(answerId: string): Promise<Answer | null> {
+    async findById(answerId: string): Promise<Answer | null> {
         const answerDoc = await AnswerModel.findById(answerId);
         return answerDoc ? answerDoc.toEntity() : null;
     }
 
-    async updateAnswer(
-        answerId: string,
-        answerData: Partial<Answer>
-    ): Promise<void> {
+    async update(answerId: string, answerData: Partial<Answer>): Promise<void> {
         await AnswerModel.findByIdAndUpdate(answerId, answerData);
     }
 
-    async deleteAnswer(answerId: string): Promise<void> {
+    async delete(answerId: string): Promise<void> {
         await AnswerModel.findByIdAndDelete(answerId);
     }
 }

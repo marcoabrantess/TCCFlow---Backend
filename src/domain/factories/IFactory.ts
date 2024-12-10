@@ -21,7 +21,7 @@ export interface ITCCFactory {
 }
 
 export interface ITaskFactory {
-    createTask(data: { title: string; questions?: string[] }): Promise<Task>;
+    createTask(data: { title: string; questions?: Question[] }): Promise<Task>;
 }
 
 export interface IQuestionFactory {

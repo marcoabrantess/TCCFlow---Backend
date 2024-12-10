@@ -1,18 +1,19 @@
 import { ITaskRepository } from '../repositories/ITaskRepository';
 import { Task } from '../entities/Task';
+import { Question } from '../entities/Question';
 
 export class TaskService {
-    constructor(private taskRepo: ITaskRepository) {}
+    constructor(private taskRepository: ITaskRepository) {}
 
-    async createTask(data: {
+    async create(data: {
         title: string;
-        questions?: string[];
+        questions?: Question[];
     }): Promise<Task> {
         if (!data.title || typeof data.title !== 'string') {
             throw new Error('Invalid task title');
         }
 
-        const task = await this.taskRepo.create({
+        const task = await this.taskRepository.create({
             title: data.title,
             questions: data.questions || [],
         });
@@ -20,38 +21,23 @@ export class TaskService {
         return task;
     }
 
-    async getTaskById(id: string): Promise<Task | null> {
+    async getById(id: string): Promise<Task | null> {
         if (!id || typeof id !== 'string') {
             throw new Error('Invalid task ID');
         }
 
-        return await this.taskRepo.findTaskById(id);
+        return await this.taskRepository.findById(id);
     }
 
-    async updateTask(id: string, data: Partial<Task>): Promise<Task | null> {
-        if (!id || typeof id !== 'string') {
-            throw new Error('Invalid task ID');
-        }
-
-        if (data.title && typeof data.title !== 'string') {
-            throw new Error('Invalid task title');
-        }
-
-        return await this.taskRepo.updateTask(id, data);
+    async update(id: string, data: Partial<Task>): Promise<void> {
+        await this.taskRepository.update(id, data);
     }
 
-    async deleteTask(id: string): Promise<void> {
-        if (!id || typeof id !== 'string') {
-            throw new Error('Invalid task ID');
-        }
-
-        await this.taskRepo.deleteTask(id);
+    async delete(id: string): Promise<void> {
+        await this.taskRepository.delete(id);
     }
 
-    async addQuestionToTask(
-        taskId: string,
-        questionId: string
-    ): Promise<Task | null> {
+    async addQuestionToTask(taskId: string, questionId: string): Promise<void> {
         if (!taskId || typeof taskId !== 'string') {
             throw new Error('Invalid task ID');
         }
@@ -60,12 +46,12 @@ export class TaskService {
             throw new Error('Invalid question ID');
         }
 
-        const task = await this.getTaskById(taskId);
+        const task = await this.getById(taskId);
         if (!task) {
             throw new Error('Task not found');
         }
 
-        task.addQuestion(questionId);
-        return await this.taskRepo.updateTask(taskId, task);
+        //task.addQuestion(questionId);
+        await this.taskRepository.update(taskId, task);
     }
 }

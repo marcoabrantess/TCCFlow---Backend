@@ -21,11 +21,11 @@ export class AnswerFactory implements IAnswerFactory {
         }
 
         return new Answer(
-            crypto.randomUUID(), // ID único
+            crypto.randomUUID(),
             data.content,
             data.questionId,
-            new Date(), // createdAt
-            new Date() // updatedAt
+            new Date(),
+            new Date()
         );
     }
 }

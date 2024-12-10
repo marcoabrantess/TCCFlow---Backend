@@ -2,32 +2,36 @@ import { QuestionRepository } from '../repositories/QuestionRepository';
 import { Question } from '../entities/Question';
 
 export class QuestionService {
-    constructor(private questionRepo: QuestionRepository) {}
+    constructor(private questionRepository: QuestionRepository) {}
 
-    createQuestion(data: Partial<Question>): Question {
-        if (!data.text || !data.type) {
+    async create(questionData: {
+        text: string;
+        type: 'text' | 'multiple-choice';
+        options: string[];
+    }): Promise<Question> {
+        if (!questionData.text || !questionData.type) {
             throw new Error('Invalid question data');
         }
 
         const question = new Question(
             Math.random().toString(36).substring(2),
-            data.text,
-            data.type,
-            data.options || []
+            questionData.text,
+            questionData.type,
+            questionData.options || []
         );
 
-        return this.questionRepo.create(question);
+        return this.questionRepository.create(question);
     }
 
-    getQuestionById(id: string): Question | undefined {
-        return this.questionRepo.findById(id);
+    async findById(id: string): Promise<Question | null> {
+        return this.questionRepository.findById(id);
     }
 
-    updateQuestion(id: string, data: Partial<Question>): Question | undefined {
-        return this.questionRepo.update(id, data);
+    async update(id: string, data: Partial<Question>): Promise<void> {
+        return this.questionRepository.update(id, data);
     }
 
-    deleteQuestion(id: string): void {
-        this.questionRepo.delete(id);
+    async delete(id: string): Promise<void> {
+        await this.questionRepository.delete(id);
     }
 }
