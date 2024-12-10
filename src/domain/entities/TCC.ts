@@ -3,7 +3,7 @@ export class TCC {
         public id: string,
         public title: string,
         public authorId: string,
-        public contentPath: string, // Caminho ou URL para o arquivo PDF
+        public contentPath: string,
         public createdAt: Date,
         public updatedAt: Date
     ) {}

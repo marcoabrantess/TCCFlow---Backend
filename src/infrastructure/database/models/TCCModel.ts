@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { TCC } from '../../../domain/entities/TCC';
 
-export interface TCCDocument extends Document {
+export interface ITCCDocument extends Document {
     title: string;
     authorId: string;
     contentPath: string;
@@ -10,7 +10,7 @@ export interface TCCDocument extends Document {
     toEntity(): TCC;
 }
 
-const tccSchema = new Schema<TCCDocument>(
+const tccSchema = new Schema<ITCCDocument>(
     {
         title: { type: String, required: true, trim: true },
         authorId: {
@@ -48,4 +48,4 @@ tccSchema.methods.toEntity = function (): TCC {
     );
 };
 
-export const TCCModel = mongoose.model<TCCDocument>('TCC', tccSchema);
+export const TCCModel = mongoose.model<ITCCDocument>('TCC', tccSchema);

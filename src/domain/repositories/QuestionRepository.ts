@@ -21,28 +21,26 @@ export class QuestionRepository implements IQuestionRepository {
             type: question.type,
             options: question.options,
             answer: question.answer,
-            createdAt: question.createdAt,
-            updatedAt: question.updatedAt,
         });
 
         return question;
     }
 
-    async findQuestionById(questionId: string): Promise<Question | null> {
+    async findById(questionId: string): Promise<Question | null> {
         const questionDoc = await QuestionModel.findById(questionId).populate(
             'answer'
         );
         return questionDoc ? questionDoc.toEntity() : null;
     }
 
-    async updateQuestion(
+    async update(
         questionId: string,
         questionData: Partial<Question>
     ): Promise<void> {
         await QuestionModel.findByIdAndUpdate(questionId, questionData);
     }
 
-    async deleteQuestion(questionId: string): Promise<void> {
+    async delete(questionId: string): Promise<void> {
         await QuestionModel.findByIdAndDelete(questionId);
     }
 }

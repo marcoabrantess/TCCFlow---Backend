@@ -2,9 +2,9 @@ import { IAnswerRepository } from '../repositories/IAnswerRepository';
 import { Answer } from '../entities/Answer';
 
 export class AnswerService {
-    constructor(private answerRepo: IAnswerRepository) {}
+    constructor(private answerRepository: IAnswerRepository) {}
 
-    async createAnswer(data: {
+    async create(data: {
         content: string | string[];
         questionId: string;
     }): Promise<Answer> {
@@ -19,21 +19,18 @@ export class AnswerService {
             throw new Error('Invalid question ID');
         }
 
-        return await this.answerRepo.create(data);
+        return await this.answerRepository.create(data);
     }
 
-    async getAnswerById(id: string): Promise<Answer | null> {
+    async getById(id: string): Promise<Answer | null> {
         if (!id || typeof id !== 'string') {
             throw new Error('Invalid answer ID');
         }
 
-        return await this.answerRepo.findAnswerById(id);
+        return await this.answerRepository.findById(id);
     }
 
-    async updateAnswer(
-        id: string,
-        data: Partial<Answer>
-    ): Promise<Answer | null> {
+    async update(id: string, data: Partial<Answer>): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new Error('Invalid answer ID');
         }
@@ -45,15 +42,13 @@ export class AnswerService {
         ) {
             throw new Error('Invalid answer content');
         }
-
-        return await this.answerRepo.updateAnswer(id, data);
     }
 
-    async deleteAnswer(id: string): Promise<void> {
+    async delete(id: string): Promise<void> {
         if (!id || typeof id !== 'string') {
             throw new Error('Invalid answer ID');
         }
 
-        await this.answerRepo.deleteAnswer(id);
+        await this.answerRepository.delete(id);
     }
 }

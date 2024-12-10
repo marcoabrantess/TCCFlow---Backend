@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { User } from '../../../domain/entities/User';
 
-export interface UserDocument extends Document {
+export interface IUserDocument extends Document {
     name: string;
     email: string;
     password: string;
@@ -11,7 +11,7 @@ export interface UserDocument extends Document {
     toEntity(): User;
 }
 
-const userSchema = new Schema<UserDocument>(
+const userSchema = new Schema<IUserDocument>(
     {
         name: { type: String, required: true, trim: true },
         email: {
@@ -56,4 +56,4 @@ userSchema.methods.toEntity = function (): User {
     );
 };
 
-export const UserModel = mongoose.model<UserDocument>('User', userSchema);
+export const UserModel = mongoose.model<IUserDocument>('User', userSchema);
