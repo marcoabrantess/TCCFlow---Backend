@@ -2,7 +2,6 @@ import { User } from '../entities/User';
 import { TCC } from '../entities/TCC';
 import { Task } from '../entities/Task';
 import { Question } from '../entities/Question';
-import { Answer } from '../entities/Answer';
 export interface IUserFactory {
     createUser(data: {
         name: string;
@@ -15,7 +14,9 @@ export interface IUserFactory {
 export interface ITCCFactory {
     createTCC(data: {
         title: string;
-        authorId: string;
+        authorName: string;
+        advisorName: string;
+        coadvisorName?: string;
         contentPath: string;
     }): Promise<TCC>;
 }
@@ -25,16 +26,5 @@ export interface ITaskFactory {
 }
 
 export interface IQuestionFactory {
-    createQuestion(data: {
-        text: string;
-        type: 'text' | 'multiple-choice';
-        options?: string[];
-    }): Promise<Question>;
-}
-
-export interface IAnswerFactory {
-    createAnswer(data: {
-        content: string | string[];
-        questionId: string;
-    }): Promise<Answer>;
+    createQuestion(data: { text: string; answer: string }): Promise<Question>;
 }

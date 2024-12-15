@@ -8,11 +8,13 @@ export interface IUserDocument extends Document {
     createdAt: Date;
     updatedAt: Date;
     userGroups: string[];
+    isActive: boolean;
     toEntity(): User;
 }
 
 const userSchema = new Schema<IUserDocument>(
     {
+        _id: { type: String, required: true },
         name: { type: String, required: true, trim: true },
         email: {
             type: String,
@@ -36,6 +38,7 @@ const userSchema = new Schema<IUserDocument>(
                 message: 'userGroups deve ser um array de strings',
             },
         },
+        isActive: { type: Boolean, default: true },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
     },
@@ -52,7 +55,8 @@ userSchema.methods.toEntity = function (): User {
         this.password,
         this.createdAt,
         this.updatedAt,
-        this.userGroups
+        this.userGroups,
+        this.isActive
     );
 };
 

@@ -58,7 +58,6 @@ describe('Elasticsearch Connection Integration Test', () => {
 
         expect(response.result).toBe('created');
 
-        // garantir que o índice esteja sincronizado antes de realizar a busca
         await client.indices.refresh({ index: indexName });
     });
 
@@ -67,7 +66,6 @@ describe('Elasticsearch Connection Integration Test', () => {
             index: indexName,
         });
 
-        // acknowledged:  indica se a operação foi reconhecida com sucesso pelo cluster do Elasticsearch
         expect(deleteResponse.acknowledged).toBe(true);
 
         await client.close();

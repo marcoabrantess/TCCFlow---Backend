@@ -6,16 +6,20 @@ export class TCCService {
 
     async create(tccData: {
         title: string;
-        authorId: string;
+        authorName: string;
         contentPath: string;
+        advisorName: string;
+        coadvisorName?: string;
     }): Promise<TCC> {
-        if (!tccData.title || !tccData.authorId || !tccData.contentPath) {
+        if (
+            !tccData.title ||
+            !tccData.authorName ||
+            !tccData.contentPath ||
+            !tccData.advisorName
+        ) {
             throw new Error(
-                'Todos os campos (title, authorId, contentPath) são obrigatórios.'
+                'Todos os campos (title, authorName, contentPath, advisorName, advisorName) são obrigatórios.'
             );
-        }
-        if (!tccData.contentPath.endsWith('.pdf')) {
-            throw new Error('O arquivo de conteúdo deve ser um PDF.');
         }
 
         return this.tccRepository.create(tccData);
@@ -25,14 +29,20 @@ export class TCCService {
         return this.tccRepository.findTCCById(id);
     }
 
-    async update(id: string, tccData: Partial<TCC>): Promise<void> {
-        if (tccData.contentPath && !tccData.contentPath.endsWith('.pdf')) {
-            throw new Error('O arquivo de conteúdo deve ser um PDF.');
-        }
-        await this.tccRepository.updateTCC(id, tccData);
+    async update(id: string, tccData: Partial<TCC>): Promise<TCC> {
+        const updatedTCC = await this.tccRepository.updateTCC(id, tccData);
+        return updatedTCC;
     }
 
     async delete(id: string): Promise<void> {
         await this.tccRepository.deleteTCC(id);
+    }
+
+    async getAll(): Promise<TCC[]> {
+        return await this.tccRepository.getAll();
+    }
+
+    async findByTitle(id: string): Promise<TCC | null> {
+        return this.tccRepository.findByTitle(id);
     }
 }

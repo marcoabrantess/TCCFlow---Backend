@@ -23,11 +23,19 @@ export class UserService {
         return this.userRepository.findById(userId);
     }
 
-    async update(userId: string, userData: Partial<User>): Promise<void> {
-        await this.userRepository.update(userId, userData);
+    async update(userId: string, userData: Partial<User>): Promise<User> {
+        return await this.userRepository.update(userId, userData);
     }
 
     async delete(userId: string): Promise<void> {
         await this.userRepository.delete(userId);
+    }
+
+    async getAll(): Promise<User[]> {
+        return await this.userRepository.getAll();
+    }
+
+    async findByEmail(userEmail: string): Promise<User | null> {
+        return this.userRepository.findByEmail(userEmail);
     }
 }

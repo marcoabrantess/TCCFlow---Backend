@@ -8,19 +8,12 @@ export class TCCRepository implements ITCCRepository {
 
     async create(tccData: {
         title: string;
-        authorId: string;
+        authorName: string;
+        advisorName: string;
+        coadvisorName: string;
         contentPath: string;
     }): Promise<TCC> {
         const tcc = await this.tccFactory.createTCC(tccData);
-
-        await TCCModel.create({
-            _id: tcc.id,
-            title: tcc.title,
-            authorId: tcc.authorId,
-            contentPath: tcc.contentPath,
-            createdAt: tcc.createdAt,
-            updatedAt: tcc.updatedAt,
-        });
 
         return tcc;
     }
@@ -30,11 +23,29 @@ export class TCCRepository implements ITCCRepository {
         return tccDoc ? tccDoc.toEntity() : null;
     }
 
-    async updateTCC(tccId: string, tccData: Partial<TCC>): Promise<void> {
-        await TCCModel.findByIdAndUpdate(tccId, tccData);
+    async updateTCC(tccId: string, tccData: Partial<TCC>): Promise<TCC> {
+        const updatedTCC = await TCCModel.findByIdAndUpdate(tccId, tccData, {
+            new: true,
+        });
+
+        if (!updatedTCC) {
+            throw new Error('TCC not found');
+        }
+
+        return updatedTCC.toEntity();
     }
 
     async deleteTCC(tccId: string): Promise<void> {
         await TCCModel.findByIdAndDelete(tccId);
+    }
+
+    async getAll(): Promise<TCC[]> {
+        const tccDocs = await TCCModel.find();
+        return tccDocs.map((tccDoc) => tccDoc.toEntity());
+    }
+
+    async findByTitle(title: string) {
+        const tccDoc = await TCCModel.findOne({ title });
+        return tccDoc ? tccDoc.toEntity() : null;
     }
 }

@@ -5,23 +5,15 @@ import { Question } from '../entities/Question';
 export class TaskService {
     constructor(private taskRepository: ITaskRepository) {}
 
-    async create(data: {
+    async create(taskData: {
         title: string;
         questions?: Question[];
+        isCompleted: boolean;
     }): Promise<Task> {
-        if (!data.title || typeof data.title !== 'string') {
-            throw new Error('Invalid task title');
-        }
-
-        const task = await this.taskRepository.create({
-            title: data.title,
-            questions: data.questions || [],
-        });
-
-        return task;
+        return await this.taskRepository.create(taskData);
     }
 
-    async getById(id: string): Promise<Task | null> {
+    async findById(id: string): Promise<Task | null> {
         if (!id || typeof id !== 'string') {
             throw new Error('Invalid task ID');
         }
@@ -29,29 +21,16 @@ export class TaskService {
         return await this.taskRepository.findById(id);
     }
 
-    async update(id: string, data: Partial<Task>): Promise<void> {
-        await this.taskRepository.update(id, data);
+    async update(id: string, data: Partial<Task>): Promise<Task | null> {
+        const updatedTask = await this.taskRepository.update(id, data);
+        return updatedTask;
     }
 
     async delete(id: string): Promise<void> {
         await this.taskRepository.delete(id);
     }
 
-    async addQuestionToTask(taskId: string, questionId: string): Promise<void> {
-        if (!taskId || typeof taskId !== 'string') {
-            throw new Error('Invalid task ID');
-        }
-
-        if (!questionId || typeof questionId !== 'string') {
-            throw new Error('Invalid question ID');
-        }
-
-        const task = await this.getById(taskId);
-        if (!task) {
-            throw new Error('Task not found');
-        }
-
-        //task.addQuestion(questionId);
-        await this.taskRepository.update(taskId, task);
+    async getAll(): Promise<Task[]> {
+        return await this.taskRepository.getAll();
     }
 }

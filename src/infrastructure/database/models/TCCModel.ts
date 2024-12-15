@@ -3,7 +3,9 @@ import { TCC } from '../../../domain/entities/TCC';
 
 export interface ITCCDocument extends Document {
     title: string;
-    authorId: string;
+    authorName: string;
+    advisorName: string;
+    coadvisorName: string;
     contentPath: string;
     createdAt: Date;
     updatedAt: Date;
@@ -12,22 +14,25 @@ export interface ITCCDocument extends Document {
 
 const tccSchema = new Schema<ITCCDocument>(
     {
-        title: { type: String, required: true, trim: true },
-        authorId: {
+        _id: { type: String, required: true },
+        title: { type: String, unique: true, required: true, trim: true },
+        authorName: {
             type: String,
             required: true,
-            validate: {
-                validator: (id: string) => mongoose.isValidObjectId(id),
-                message: 'authorId deve ser um ID válido',
-            },
+            trim: true,
+        },
+        advisorName: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        coadvisorName: {
+            type: String,
+            trim: true,
         },
         contentPath: {
             type: String,
             required: true,
-            validate: {
-                validator: (path: string) => path.endsWith('.pdf'),
-                message: 'contentPath deve ser um arquivo PDF',
-            },
         },
         createdAt: { type: Date, default: Date.now },
         updatedAt: { type: Date, default: Date.now },
@@ -41,7 +46,9 @@ tccSchema.methods.toEntity = function (): TCC {
     return new TCC(
         this._id.toString(),
         this.title,
-        this.authorId,
+        this.authorName,
+        this.advisorName,
+        this.coadvisorName,
         this.contentPath,
         this.createdAt,
         this.updatedAt

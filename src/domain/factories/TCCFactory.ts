@@ -1,3 +1,4 @@
+import { TCCModel } from '../../infrastructure/database/models/TCCModel';
 import { TCC } from '../entities/TCC';
 import { ITCCFactory } from './IFactory';
 import crypto from 'crypto';
@@ -5,20 +6,33 @@ import crypto from 'crypto';
 export class TCCFactory implements ITCCFactory {
     public async createTCC(data: {
         title: string;
-        authorId: string;
+        authorName: string;
+        advisorName: string;
+        coadvisorName?: string;
         contentPath: string;
     }): Promise<TCC> {
-        if (!data.contentPath.endsWith('.pdf')) {
-            throw new Error('O arquivo de conteúdo deve ser um PDF.');
-        }
-
-        return new TCC(
+        const tcc = new TCC(
             crypto.randomUUID(),
             data.title,
-            data.authorId,
+            data.authorName,
+            data.advisorName,
+            data.coadvisorName || '',
             data.contentPath,
             new Date(),
             new Date()
         );
+
+        await TCCModel.create({
+            _id: tcc._id,
+            title: tcc.title,
+            authorName: tcc.authorName,
+            advisorName: tcc.advisorName,
+            coadvisorName: tcc.coadvisorName,
+            contentPath: tcc.contentPath,
+            createdAt: tcc.createdAt,
+            updatedAt: tcc.updatedAt,
+        });
+
+        return tcc;
     }
 }

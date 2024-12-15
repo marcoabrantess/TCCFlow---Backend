@@ -6,29 +6,21 @@ export class QuestionService {
 
     async create(questionData: {
         text: string;
-        type: 'text' | 'multiple-choice';
-        options: string[];
+        answer: string;
     }): Promise<Question> {
-        if (!questionData.text || !questionData.type) {
-            throw new Error('Invalid question data');
-        }
-
-        const question = new Question(
-            Math.random().toString(36).substring(2),
-            questionData.text,
-            questionData.type,
-            questionData.options || []
-        );
-
-        return this.questionRepository.create(question);
+        return this.questionRepository.create(questionData);
     }
 
     async findById(id: string): Promise<Question | null> {
         return this.questionRepository.findById(id);
     }
 
-    async update(id: string, data: Partial<Question>): Promise<void> {
-        return this.questionRepository.update(id, data);
+    async update(
+        id: string,
+        data: Partial<Question>
+    ): Promise<Question | null> {
+        const updatedQuesiton = this.questionRepository.update(id, data);
+        return updatedQuesiton;
     }
 
     async delete(id: string): Promise<void> {

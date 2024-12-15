@@ -8,36 +8,37 @@ export class QuestionRepository implements IQuestionRepository {
 
     async create(questionData: {
         text: string;
-        type: 'text' | 'multiple-choice';
-        options?: string[];
+        answer: string;
     }): Promise<Question> {
         const question = await this.questionFactory.createQuestion(
             questionData
         );
 
-        await QuestionModel.create({
-            _id: question.id,
-            text: question.text,
-            type: question.type,
-            options: question.options,
-            answer: question.answer,
-        });
-
         return question;
     }
 
     async findById(questionId: string): Promise<Question | null> {
-        const questionDoc = await QuestionModel.findById(questionId).populate(
-            'answer'
-        );
+        const questionDoc = await QuestionModel.findById(questionId);
         return questionDoc ? questionDoc.toEntity() : null;
     }
 
     async update(
         questionId: string,
         questionData: Partial<Question>
-    ): Promise<void> {
-        await QuestionModel.findByIdAndUpdate(questionId, questionData);
+    ): Promise<Question | null> {
+        const updatedQuestion = await QuestionModel.findByIdAndUpdate(
+            questionId,
+            questionData,
+            {
+                new: true,
+            }
+        );
+
+        if (!updatedQuestion) {
+            throw new Error('Question not found');
+        }
+
+        return updatedQuestion.toEntity();
     }
 
     async delete(questionId: string): Promise<void> {

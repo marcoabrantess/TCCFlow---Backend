@@ -2,6 +2,7 @@ import { IUserRepository } from './IUserRepository';
 import { User } from '../entities/User';
 import { IUserFactory } from '../factories/IFactory';
 import { UserModel } from '../../infrastructure/database/models/UserModel';
+import bcrypt from 'bcryptjs';
 
 export class UserRepository implements IUserRepository {
     constructor(private userFactory: IUserFactory) {}
@@ -14,16 +15,6 @@ export class UserRepository implements IUserRepository {
     }): Promise<User> {
         const user = await this.userFactory.createUser(userData);
 
-        await UserModel.create({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-            password: user.password,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-            userGroups: user.userGroups,
-        });
-
         return user;
     }
 
@@ -32,11 +23,39 @@ export class UserRepository implements IUserRepository {
         return userDoc ? userDoc.toEntity() : null;
     }
 
-    async update(userId: string, userData: Partial<User>): Promise<void> {
-        await UserModel.findByIdAndUpdate(userId, userData);
+    async update(userId: string, userData: Partial<User>): Promise<User> {
+        if (userData.password) {
+            const hashedPassword = await bcrypt.hash(userData.password, 10);
+            userData.password = hashedPassword;
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            userId,
+            userData,
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        if (!updatedUser) {
+            throw new Error('User not found');
+        }
+
+        return updatedUser.toEntity();
     }
 
     async delete(userId: string): Promise<void> {
         await UserModel.findByIdAndDelete(userId);
+    }
+
+    async getAll(): Promise<User[]> {
+        const userDocs = await UserModel.find();
+        return userDocs.map((userDoc) => userDoc.toEntity());
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        const userDoc = await UserModel.findOne({ email });
+        return userDoc ? userDoc.toEntity() : null;
     }
 }
