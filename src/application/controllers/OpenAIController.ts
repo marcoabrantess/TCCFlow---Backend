@@ -5,7 +5,6 @@ const openAIService = new OpenAIService();
 
 export const generateText = async (req: Request, res: Response) => {
     try {
-        console.log(req.body);
         const { content } = req.body;
 
         if (!content) {

@@ -105,8 +105,6 @@ export const updateTask = async (
         const taskId = req.params.id;
         const { title, questions, isCompleted } = req.body;
 
-        console.log(req.body);
-
         const createdQuestions = await Promise.all(
             questions.map(
                 async (question: QuestionObject) =>
