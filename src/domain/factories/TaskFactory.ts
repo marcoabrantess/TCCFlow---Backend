@@ -1,20 +1,21 @@
 import { TaskModel } from '../../infrastructure/database/models/TaskModel';
-import { Question } from '../entities/Question';
-import { Task } from '../entities/Task';
+import { Task, StudentGrade } from '../entities/Task';
 import { ITaskFactory } from './IFactory';
 import crypto from 'crypto';
 
 export class TaskFactory implements ITaskFactory {
     public async createTask(data: {
         title: string;
-        questions?: Question[];
-        isCompleted: boolean;
+        description: string;
+        totalGrade: number;
+        studentGrades: StudentGrade[];
     }): Promise<Task> {
         const task = new Task(
             crypto.randomUUID(),
             data.title,
-            data.questions || [],
-            data.isCompleted || false,
+            data.description,
+            data.totalGrade,
+            data.studentGrades || [],
             new Date(),
             new Date()
         );
@@ -22,7 +23,9 @@ export class TaskFactory implements ITaskFactory {
         await TaskModel.create({
             _id: task._id,
             title: task.title,
-            questions: task.questions,
+            description: task.description,
+            totalGrade: task.totalGrade,
+            studentGrades: task.studentGrades,
             createdAt: task.createdAt,
             updatedAt: task.updatedAt,
         });

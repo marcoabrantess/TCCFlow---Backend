@@ -3,23 +3,14 @@ import { TaskFactory } from '../../domain/factories/TaskFactory';
 import { TaskRepository } from '../../domain/repositories/TaskRepository';
 import { TaskService } from '../../domain/services/TaskService';
 
-import { QuestionFactory } from '../../domain/factories/QuestionFactory';
-import { QuestionRepository } from '../../domain/repositories/QuestionRepository';
-import { QuestionService } from '../../domain/services/QuestionService';
-
-interface QuestionObject {
-    text: string;
-    answer: string;
-}
-
-const questionFactory = new QuestionFactory();
-const questionRepository = new QuestionRepository(questionFactory);
-const questionService = new QuestionService(questionRepository);
-
 interface CreateTaskRequestBody {
     title: string;
-    questions: QuestionObject[];
-    isCompleted: boolean;
+    description: string;
+    totalGrade: number;
+    studentGrades: Array<{
+        studentId: string;
+        percentageGrade: number;
+    }>;
 }
 
 const taskFactory = new TaskFactory();
@@ -31,22 +22,13 @@ export const createTask = async (
     res: Response
 ) => {
     try {
-        const { title, questions, isCompleted } = req.body;
-
-        const createdQuestions = await Promise.all(
-            questions.map(
-                async (question) =>
-                    await questionService.create({
-                        text: question.text,
-                        answer: question.answer,
-                    })
-            )
-        );
+        const { title, description, totalGrade, studentGrades } = req.body;
 
         const taskData = {
             title,
-            questions: createdQuestions,
-            isCompleted,
+            description,
+            totalGrade,
+            studentGrades: studentGrades || [],
         };
 
         const createdTask = await taskService.create(taskData);
@@ -75,7 +57,7 @@ export const getTask = async (req: Request<{ id: string }>, res: Response) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: 'An error occurred while get the task',
+            message: 'An error occurred while getting the task',
             error: err instanceof Error ? err.message : 'Unknown error',
         });
     }
@@ -83,15 +65,15 @@ export const getTask = async (req: Request<{ id: string }>, res: Response) => {
 
 export const getAllTasks = async (req: Request, res: Response) => {
     try {
-        const allUsers = await taskService.getAll();
+        const allTasks = await taskService.getAll();
 
         res.status(200).json({
-            data: allUsers,
+            data: allTasks,
         });
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: 'An error occurred while get all users',
+            message: 'An error occurred while getting all tasks',
             error: err instanceof Error ? err.message : 'Unknown error',
         });
     }
@@ -103,26 +85,22 @@ export const updateTask = async (
 ) => {
     try {
         const taskId = req.params.id;
-        const { title, questions, isCompleted } = req.body;
-
-        const createdQuestions = await Promise.all(
-            questions.map(
-                async (question: QuestionObject) =>
-                    await questionService.create({
-                        text: question.text,
-                        answer: question.answer,
-                    })
-            )
-        );
+        const { title, description, totalGrade, studentGrades } = req.body;
 
         const taskData: Partial<{
             title: string;
-            questions: typeof createdQuestions;
-            isCompleted: boolean;
+            description: string;
+            totalGrade: number;
+            studentGrades: Array<{
+                studentId: string;
+                percentageGrade: number;
+            }>;
         }> = {};
+
         if (title) taskData.title = title;
-        if (createdQuestions) taskData.questions = createdQuestions;
-        if (isCompleted) taskData.isCompleted = isCompleted;
+        if (description) taskData.description = description;
+        if (totalGrade) taskData.totalGrade = totalGrade;
+        if (studentGrades) taskData.studentGrades = studentGrades;
 
         const updatedTask = await taskService.update(taskId, taskData);
 
@@ -133,7 +111,7 @@ export const updateTask = async (
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: 'An error occurred while update the task',
+            message: 'An error occurred while updating the task',
             error: err instanceof Error ? err.message : 'Unknown error',
         });
     }
@@ -145,7 +123,6 @@ export const deleteTask = async (
 ) => {
     try {
         const taskId = req.params.id;
-
         await taskService.delete(taskId);
 
         res.status(204).json({
@@ -154,8 +131,34 @@ export const deleteTask = async (
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            message: 'An error occurred while update the task',
+            message: 'An error occurred while deleting the task',
             error: err instanceof Error ? err.message : 'Unknown error',
         });
     }
 };
+
+// Task.ts
+export interface StudentGrade {
+    studentId: string;
+    percentageGrade: number;
+}
+
+export class Task {
+    constructor(
+        public _id: string,
+        public title: string,
+        public description: string,
+        public totalGrade: number,
+        public studentGrades: StudentGrade[],
+        public createdAt: Date,
+        public updatedAt: Date
+    ) {}
+
+    public calculateStudentGrade(studentId: string): number {
+        const studentGrade = this.studentGrades.find(
+            (grade) => grade.studentId === studentId
+        );
+        if (!studentGrade) return 0;
+        return (studentGrade.percentageGrade / 100) * this.totalGrade;
+    }
+}

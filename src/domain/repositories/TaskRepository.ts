@@ -1,19 +1,18 @@
 import { ITaskRepository } from './ITaskRepository';
-import { Task } from '../entities/Task';
+import { Task, StudentGrade } from '../entities/Task';
 import { ITaskFactory } from '../factories/IFactory';
 import { TaskModel } from '../../infrastructure/database/models/TaskModel';
-import { Question } from '../entities/Question';
 
 export class TaskRepository implements ITaskRepository {
     constructor(private taskFactory: ITaskFactory) {}
 
     async create(taskData: {
         title: string;
-        questions?: Question[];
-        isCompleted: boolean;
+        description: string;
+        totalGrade: number;
+        studentGrades: StudentGrade[];
     }): Promise<Task> {
         const task = await this.taskFactory.createTask(taskData);
-
         return task;
     }
 
